@@ -14,6 +14,7 @@ This action will help you upload an Android `.apk` or `.aab` (Android App Bundle
 | inAppUpdatePriority | In-app update priority of the release. All newly added APKs in the release will be considered at this priority. Defaults to `0` | `[0-5]`, where `5` is the highest priority | false |
 | userFraction | Percentage of users who should get the staged version of the app. | `(0.0-1.0)` | false |
 | status | Release status. Defaults to `completed`. | One of `completed`, `inProgress`, `halted`, `draft`. Cannot be null. | false |
+| commitEdit | Whether or not the `Edit` should be commited. Setting to `false` will not commit the edit - only takes effect if `status` is set to `draft`. Default is `true`. | `true` or `false` | false
 | whatsNewDirectory | The directory of localized "whats new" files to upload as the release notes. The files contained in the `whatsNewDirectory` MUST use the pattern `whatsnew-<LOCALE>` where `LOCALE` is using the [`BCP 47`](https://tools.ietf.org/html/bcp47) format | A path to a valid `whatsNewDirectory` | false |
 | mappingFile | The mapping.txt file used to de-obfuscate your stack traces from crash reports | A path to a valid `mapping.txt` file | false |
 | debugSymbols | The native-debug-symbols.zip file or folder that contains your debug symbols | A path to a valid `native-debug-symbols.zip file` file or a folder | false |

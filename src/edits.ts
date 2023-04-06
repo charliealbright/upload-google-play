@@ -32,6 +32,7 @@ export interface EditOptions {
     status: string;
     changesNotSentForReview?: boolean;
     existingEditId?: string;
+    commitEdit: boolean;
 }
 
 export async function runUpload(
@@ -46,6 +47,7 @@ export async function runUpload(
     changesNotSentForReview: boolean,
     existingEditId: string | undefined,
     status: string,
+    commitEdit: boolean,
     validatedReleaseFiles: string[]
 ) {
     const auth = new google.auth.GoogleAuth({
@@ -66,7 +68,8 @@ export async function runUpload(
         name: name,
         changesNotSentForReview: changesNotSentForReview,
         existingEditId: existingEditId,
-        status: status
+        status: status,
+        commitEdit: commitEdit
     }, validatedReleaseFiles);
 
     if (result) {
@@ -107,21 +110,26 @@ async function uploadToPlayStore(options: EditOptions, releaseFiles: string[]): 
         await addReleasesToTrack(appEditId, options, versionCodes);
 
         // Commit the pending Edit
-        core.info(`Committing the Edit`)
-        const res = await androidPublisher.edits.commit({
-            auth: options.auth,
-            editId: appEditId,
-            packageName: options.applicationId,
-            changesNotSentForReview: options.changesNotSentForReview
-        });
-
-        // Simple check to see whether commit was successful
-        if (res.data.id) {
-            core.info(`Successfully committed ${res.data.id}`);
-            return res.data.id
+        if (options.status === 'draft' && options.commitEdit === false) {
+            core.info('commitEdit is false, Edit will not be commited.')
+            return;
         } else {
-            core.setFailed(`Error ${res.status}: ${res.statusText}`);
-            return Promise.reject(res.status);
+            core.info(`Committing the Edit`)
+            const res = await androidPublisher.edits.commit({
+                auth: options.auth,
+                editId: appEditId,
+                packageName: options.applicationId,
+                changesNotSentForReview: options.changesNotSentForReview
+            });
+
+            // Simple check to see whether commit was successful
+            if (res.data.id) {
+                core.info(`Successfully committed ${res.data.id}`);
+                return res.data.id
+            } else {
+                core.setFailed(`Error ${res.status}: ${res.statusText}`);
+                return Promise.reject(res.status);
+            }
         }
     }
 

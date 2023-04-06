@@ -24,6 +24,7 @@ export async function run() {
         const debugSymbols = core.getInput('debugSymbols', { required: false });
         const changesNotSentForReview = core.getInput('changesNotSentForReview', { required: false }) == 'true';
         const existingEditId = core.getInput('existingEditId');
+        const commitEdit = core.getInput('commitEdit', { required: false }) == 'true';
 
         await validateServiceAccountJson(serviceAccountJsonRaw, serviceAccountJson)
 
@@ -79,7 +80,8 @@ export async function run() {
                 changesNotSentForReview,
                 existingEditId,
                 status,
-                validatedReleaseFiles
+                commitEdit,
+                validatedReleaseFiles,
             ),
             {
                 milliseconds: 3.6e+6
